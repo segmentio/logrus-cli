@@ -18,7 +18,7 @@ func main() {
 	for scanner.Scan() {
 		var line map[string]interface{}
 		if err := json.Unmarshal(scanner.Bytes(), &line); err != nil {
-			panic(err)
+			continue
 		}
 		e := &logrus.Entry{
 			Logger:  logger,
@@ -27,7 +27,12 @@ func main() {
 			Level:   mustParseLevel(line["level"].(string)),
 			Message: line["msg"].(string),
 		}
-		fmt.Println(formatter.Format(e))
+
+		if b, err := formatter.Format(e); err != nil {
+			continue
+		} else {
+			fmt.Println(string(b))
+		}
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -38,7 +43,7 @@ func main() {
 func mustParseTime(value string) time.Time {
 	t, err := time.Parse(time.RFC3339, value)
 	if err != nil {
-		panic(err)
+		return time.Now()
 	}
 	return t
 }
@@ -46,7 +51,7 @@ func mustParseTime(value string) time.Time {
 func mustParseLevel(value string) logrus.Level {
 	l, err := logrus.ParseLevel(value)
 	if err != nil {
-		panic(err)
+		return logrus.ErrorLevel
 	}
 	return l
 }
