@@ -31,7 +31,7 @@ func main() {
 		if b, err := formatter.Format(e); err != nil {
 			continue
 		} else {
-			fmt.Println(string(b))
+			fmt.Printf("%s\n\r", b)
 		}
 	}
 
